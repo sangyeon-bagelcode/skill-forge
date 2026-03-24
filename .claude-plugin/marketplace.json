@@ -1,0 +1,18 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "skill-forge",
+  "owner": {
+    "name": "Sangyeon Won",
+    "email": "sangyeon@bagelcode.com"
+  },
+  "plugins": [
+    {
+      "name": "skill-forge",
+      "description": "Systematically design, write, test, and deploy agent-compliant Claude Code skills. Multi-skill pipeline with pressure testing and cross-platform portability.",
+      "source": "./plugins/skill-forge",
+      "version": "1.0.0",
+      "category": "development",
+      "keywords": ["skills", "meta-skill", "skill-creation", "testing", "deployment", "agent-compliance"]
+    }
+  ]
+}
