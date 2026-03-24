@@ -1,0 +1,5 @@
+{
+  "name": "skill-forge",
+  "version": "1.0.0",
+  "description": "Systematically design, write, test, and deploy agent-compliant Claude Code skills"
+}
