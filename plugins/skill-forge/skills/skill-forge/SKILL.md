@@ -68,7 +68,7 @@ else:
 | `design`        | none                                                      | `Skill("skill-forge:design")` |
 | `write`         | `phases.design.output` file exists                        | `Skill("skill-forge:write")`  |
 | `test`          | `phases.write.output` file exists                         | `Skill("skill-forge:test")`   |
-| `deploy`        | `phases.test.status == "completed"`                       | `Skill("skill-forge:deploy")` |
+| `deploy`        | `phases.test.status == "completed"` AND `phases.test.benchmark` path exists | `Skill("skill-forge:deploy")` |
 
 ## Hard Gates
 
@@ -76,7 +76,7 @@ Before routing, verify the predecessor output. If the gate fails, stop and repor
 
 - **write gate**: `phases.design.output` path must exist on disk
 - **test gate**: `phases.write.output` path (SKILL.md) must exist on disk
-- **deploy gate**: `phases.test.status` must equal `"completed"`
+- **deploy gate**: `phases.test.status` must equal `"completed"` AND `phases.test.benchmark` path must exist on disk
 
 Do NOT invoke the sub-skill if its gate is not satisfied.
 
@@ -119,6 +119,33 @@ Set the completed phase `status` to `"completed"`, record its `output`, and adva
   }
 }
 ```
+
+**After test phase completes:**
+
+The test phase records additional fields beyond the standard `status` and `output`:
+
+```json
+{
+  "skill_name": "example-skill",
+  "created_at": "2026-03-24",
+  "current_phase": "deploy",
+  "phases": {
+    "design": { "status": "completed", "output": "docs/skill-forge/example-skill-design.md" },
+    "write":  { "status": "completed", "output": "skills/example-skill/SKILL.md" },
+    "test":   {
+      "status": "completed",
+      "output": "example-skill-workspace/iteration-2/",
+      "benchmark": "example-skill-workspace/iteration-2/benchmark.json",
+      "description_optimized": true
+    },
+    "deploy": { "status": "in_progress" }
+  }
+}
+```
+
+Additional test phase fields:
+- `benchmark`: Path to the final iteration's benchmark.json (required for deploy gate)
+- `description_optimized`: Whether description optimization was run (optional, defaults to false)
 
 **Rules:**
 - Only the orchestrator creates or modifies status files

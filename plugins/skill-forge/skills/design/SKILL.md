@@ -8,7 +8,7 @@ description: Use when starting skill creation from an idea, before writing any S
 <HARD-GATE>
 Do NOT produce a design document until ALL 7 checklist steps below are complete.
 Steps: classify → analyze failure modes → derive law/gate → build rationalization table
-       → design process flow → optimize CSO → design portability
+       → design process flow → draft CSO → design portability
 Producing partial output or a "draft" before completing all steps violates this gate.
 </HARD-GATE>
 
@@ -21,7 +21,7 @@ Complete every step in order. Do not skip, reorder, or abbreviate.
 3. **Derive enforcement mechanism** — For discipline type: write the Iron Law (`NO X WITHOUT Y FIRST`). For workflow type: write the HARD-GATE. See `pattern-library.md`.
 4. **Build rationalization table** — Map predicted agent excuses to authoritative counter-arguments. Minimum 3 entries. See `pattern-library.md`.
 5. **Design process flow** — Identify decision points, loops, and gates. Produce a Graphviz digraph.
-6. **Optimize CSO** — Craft the trigger description starting with "Use when...". Apply all rules from `cso-guide.md`.
+6. **Draft CSO** — Write an initial trigger description starting with "Use when...". Apply basic rules from `cso-guide.md` (no workflow summary, under 1024 chars). This description is a draft — it will be data-driven optimized during the test phase via `scripts/run_loop.py`.
 7. **Design portability** — Map all tool dependencies across Claude Code, Codex CLI, and Gemini CLI. Document fallbacks.
 
 ---
@@ -98,7 +98,7 @@ digraph design_skill {
   ENFORCE   [label="3. Derive\nIron Law or HARD-GATE"];
   RATABLE   [label="4. Build\nRationalization Table"];
   FLOW      [label="5. Design\nProcess Flow"];
-  CSO       [label="6. Optimize\nCSO Description"];
+  CSO       [label="6. Draft\nCSO Description"];
   PORT      [label="7. Design\nPortability"];
   COMPLETE  [label="All 7 Steps\nComplete?" shape=diamond];
   OUTPUT    [label="Produce\nDesign Document"];

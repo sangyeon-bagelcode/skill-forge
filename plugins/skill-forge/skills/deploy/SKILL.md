@@ -5,9 +5,10 @@ description: Use when a skill has passed pressure tests and needs to be packaged
 # Skill Forge: Deploy
 
 <HARD-GATE>
-Do NOT package any skill until ALL 7 checklist steps below are complete.
-Steps: verify test gate → select mode → create structure → generate plugin.json
-       → generate README → verify installation → git commit
+Do NOT package any skill until ALL 8 checklist steps below are complete.
+Steps: verify test gate → verify description optimization → select mode →
+       create structure → generate plugin.json → generate README →
+       verify installation → git commit
 Producing partial plugin output or committing before verification violates this gate.
 </HARD-GATE>
 
@@ -15,10 +16,14 @@ Producing partial plugin output or committing before verification violates this 
 
 Complete every step in order. Do not skip, reorder, or abbreviate.
 
-0. **Verify test gate** — Confirm `docs/skill-forge/<skill-name>-test-report.md` exists AND one of:
-   - Composite >= 80 with each axis >= 60, OR
-   - `waiver: true` with user-provided rationale in the report.
+0. **Verify test gate** — Confirm ALL of:
+   - `phases.test.status == "completed"` in status.json
+   - `phases.test.benchmark` path exists on disk (benchmark.json)
+   - Final iteration's feedback.json indicates user approval (empty feedback = approval)
+   OR: `waiver: true` with user-provided rationale in status.json.
    If neither condition is met → halt and surface the failure to the user. Do not proceed.
+
+0.5. **Verify description optimization** — If `phases.test.description_optimized == true` in status.json, confirm that SKILL.md's frontmatter `description` has been updated with the optimized result (`best_description`). If not yet applied, apply it before continuing. If description optimization was not run (`description_optimized` is absent or false), skip this step.
 
 1. **Select deployment mode** — Present the deployment modes table below to the user and wait for their explicit choice before continuing.
 
@@ -82,10 +87,11 @@ digraph deploy_skill {
   node [shape=box style=rounded];
 
   START    [label="Invoke\nskill-forge:deploy" shape=oval];
-  GATE     [label="HARD-GATE\nTest report present?" shape=diamond];
-  SCORES   [label="Scores pass?\nComposite ≥ 80\nAll axes ≥ 60" shape=diamond];
+  GATE     [label="HARD-GATE\nTest status complete?" shape=diamond];
+  SCORES   [label="Benchmark exists?\nFeedback approved?" shape=diamond];
   WAIVER   [label="Waiver: true\n+ rationale?" shape=diamond];
   HALT     [label="HALT — Surface\nfailure to user" shape=oval];
+  DESC     [label="0.5. Verify\nDescription Optimization"];
   MODE     [label="1. Select\nDeployment Mode"];
   STRUCT   [label="2. Create\nDirectory Structure"];
   PLUGIN   [label="3. Generate/Update\nplugin.json"];
@@ -98,10 +104,11 @@ digraph deploy_skill {
   START  -> GATE;
   GATE   -> SCORES  [label="present"];
   GATE   -> HALT    [label="missing"];
-  SCORES -> MODE    [label="pass"];
+  SCORES -> DESC    [label="pass"];
   SCORES -> WAIVER  [label="fail"];
-  WAIVER -> MODE    [label="yes"];
+  WAIVER -> DESC    [label="yes"];
   WAIVER -> HALT    [label="no"];
+  DESC   -> MODE;
   MODE   -> STRUCT;
   STRUCT -> PLUGIN;
   PLUGIN -> README;
@@ -140,6 +147,6 @@ digraph deploy_skill {
 ## References
 
 - [plugin-template.json](plugin-template.json) — Base template for generating plugin.json files
-- `../test/SKILL.md` — Test skill that produces the required test report
-- `../test/scoring-rubric.md` — Composite score formula and axis definitions
+- `../test/SKILL.md` — Test skill that produces benchmark.json and feedback.json
+- `../test/references/schemas.md` — JSON schemas for evals, grading, benchmark data
 - `../write/portability-guide.md` — Cross-platform tool mapping for portability audit
