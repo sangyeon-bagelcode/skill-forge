@@ -5,10 +5,10 @@ description: Use when a skill has passed pressure tests and needs to be packaged
 # Skill Forge: Deploy
 
 <HARD-GATE>
-Do NOT package any skill until ALL 8 checklist steps below are complete.
+Do NOT package any skill until ALL 9 checklist steps below are complete.
 Steps: verify test gate → verify description optimization → select mode →
        create structure → generate plugin.json → generate README →
-       verify installation → git commit → enable plugin
+       verify installation → git commit → enable plugin → register in catalog
 Producing partial plugin output or committing before verification violates this gate.
 </HARD-GATE>
 
@@ -38,6 +38,8 @@ Complete every step in order. Do not skip, reorder, or abbreviate.
 6. **Git commit** — Stage all generated files and commit. Message format: `feat: add {skill-name} skill to {plugin-name}`.
 
 7. **Enable plugin** — Add `"{plugin-name}@{marketplace}": true` to `enabledPlugins` in `~/.claude/settings.json`. If the plugin is being added to an existing enabled plugin, this step is already satisfied. Verify the entry exists after editing.
+
+8. **Register in marketplace catalog** — Add an entry to the target marketplace's `.claude-plugin/marketplace.json` `plugins` array. Include `name`, `description`, `source`, `version`, `category`, and `keywords`. Also update the marketplace `README.md` table. If the plugin is being added to an existing catalog entry, update the existing entry instead of creating a duplicate. Then commit and push the catalog changes.
 
 ---
 
@@ -102,6 +104,7 @@ digraph deploy_skill {
   PASS     [label="All checks\npass?" shape=diamond];
   COMMIT   [label="6. Git Commit\nAll Generated Files"];
   ENABLE   [label="7. Enable Plugin\nin settings.json"];
+  CATALOG  [label="8. Register in\nMarketplace Catalog"];
   END      [label="done" shape=oval];
 
   START  -> GATE;
@@ -120,7 +123,8 @@ digraph deploy_skill {
   PASS   -> COMMIT  [label="yes"];
   PASS   -> STRUCT  [label="no — fix and\nre-verify" style=dashed];
   COMMIT -> ENABLE;
-  ENABLE -> END;
+  ENABLE -> CATALOG;
+  CATALOG -> END;
 }
 ```
 
