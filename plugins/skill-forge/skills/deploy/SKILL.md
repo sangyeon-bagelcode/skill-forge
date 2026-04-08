@@ -8,7 +8,7 @@ description: Use when a skill has passed pressure tests and needs to be packaged
 Do NOT package any skill until ALL 8 checklist steps below are complete.
 Steps: verify test gate → verify description optimization → select mode →
        create structure → generate plugin.json → generate README →
-       verify installation → git commit
+       verify installation → git commit → enable plugin
 Producing partial plugin output or committing before verification violates this gate.
 </HARD-GATE>
 
@@ -36,6 +36,8 @@ Complete every step in order. Do not skip, reorder, or abbreviate.
 5. **Verify installation** — Run all 7 checks from the Installation Verification Checklist below. Record pass/fail for each. Do not commit if any check fails.
 
 6. **Git commit** — Stage all generated files and commit. Message format: `feat: add {skill-name} skill to {plugin-name}`.
+
+7. **Enable plugin** — Add `"{plugin-name}@{marketplace}": true` to `enabledPlugins` in `~/.claude/settings.json`. If the plugin is being added to an existing enabled plugin, this step is already satisfied. Verify the entry exists after editing.
 
 ---
 
@@ -99,6 +101,7 @@ digraph deploy_skill {
   VERIFY   [label="5. Verify\nInstallation (7 checks)"];
   PASS     [label="All checks\npass?" shape=diamond];
   COMMIT   [label="6. Git Commit\nAll Generated Files"];
+  ENABLE   [label="7. Enable Plugin\nin settings.json"];
   END      [label="done" shape=oval];
 
   START  -> GATE;
@@ -116,7 +119,8 @@ digraph deploy_skill {
   VERIFY -> PASS;
   PASS   -> COMMIT  [label="yes"];
   PASS   -> STRUCT  [label="no — fix and\nre-verify" style=dashed];
-  COMMIT -> END;
+  COMMIT -> ENABLE;
+  ENABLE -> END;
 }
 ```
 
